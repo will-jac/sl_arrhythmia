@@ -1,15 +1,13 @@
 import numpy as np
 import preprocess
-
-def mse(predict, true):
-    return np.sum(np.square(predict - true))
+import risk
 
 def cross_validation(models, collapse=True):
     k = len(models)
 
     data = preprocess.process_data(partitions=[1/k for _ in range(k)], collapse=collapse)
 
-    risk = []
+    r = []
 
     for i, model in enumerate(models):
         valid = data[i]
@@ -27,6 +25,6 @@ def cross_validation(models, collapse=True):
         # print(valid)
         p = model.predict(valid[:,0:-1])
 
-        risk.append(mse(p, valid[:,-1]))
+        r.append(risk.empirical_risk('mse', p, valid[:,-1]))
 
-    return risk
+    return r

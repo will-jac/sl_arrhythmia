@@ -2,7 +2,6 @@ import csv
 import numpy as np
 import math
 
-
 # reshape the last column to be 0 (no arrhythmia) or 1 (arrhythmia)
 def condense(x):
     # print(x)
