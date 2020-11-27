@@ -48,9 +48,6 @@ if __name__=='__main__':
     import preprocess
     import risk
 
-    # data = [[testing], [validation], [training]]
-    # data = preprocess.process_data(partitions=[0.2,0.8])#[0.1 for i in range(10)])
-
     models = [kNN(i) for i in range(1,10)]
     r = kFold.cross_validation(models)
 
@@ -67,13 +64,3 @@ if __name__=='__main__':
     p = model.predict(valid[:,0:-1])
 
     print(risk.empirical_risk('mse', p, valid[:,-1]))
-
-    # print(data[1][:,0:-1])
-    # print(data[1][:,-1])
-    # model.fit(data[1][:,0:-1], data[1][:,-1])
-    # predictions = model.predict(data[0][:,0:-1])
-    # # print(data[0][:,0:-1])
-    # # print(data[0][:,-1])
-    # print(predictions)
-    # loss = np.mean(mean_squared_error_loss(predictions, data[0][:,-1]))
-    # print(loss)

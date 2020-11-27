@@ -17,9 +17,6 @@ def cross_validation(models, collapse=True):
         for i in range(1, len(hole_data)):
             np.append(train, data[i])
 
-        # part, rows, cols = train.shape
-        # rows = part*rows
-        # np.reshape(train, newshape=(rows, cols))
         # print(train)
         model.fit(train[:,0:-1], train[:,-1])
         # print(valid)
