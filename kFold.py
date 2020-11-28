@@ -2,20 +2,20 @@ import numpy as np
 import preprocess
 import risk
 
-def cross_validation(models, collapse=True):
+def cross_validation(data, models):
     k = len(models)
 
-    data = preprocess.process_data(partitions=[1/k for _ in range(k)], collapse=collapse)
+    partitioned_data = preprocess.partition_data(data, partitions=[1/k for _ in range(k)])
 
     r = []
 
     for i, model in enumerate(models):
-        valid = data[i]
+        valid = partitioned_data[i]
 
-        hole_data = np.delete(data, i, 0)
+        hole_data = np.delete(partitioned_data, i, 0)
         train = hole_data[0]
         for i in range(1, len(hole_data)):
-            np.append(train, data[i])
+            np.append(train, partitioned_data[i])
 
         # print(train)
         model.fit(train[:,0:-1], train[:,-1])
