@@ -91,7 +91,6 @@ if __name__=='__main__':
     data = preprocess.process_data(collapse=True, normalize=True, predict_missing=True, k_predict=3)
 
     print(data)
-    print('has NAN:', np.any(np.isnan(data)))
 
     print('performing cross-validation...')
     models = [kNN(i) for i in range(1,10)]

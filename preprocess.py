@@ -20,11 +20,11 @@ def collapse_label(x):
 #
 def normalize_data(x):
     # x = column vector
-    x_min = np.min(x)
-    x_range = np.max(x) - x_min
+    x_min = np.nanmin(x)
+    x_range = np.nanmax(x) - x_min
     # don't divide by zero!
     if math.isclose(x_range, 0):
-        # print('returning x, x_range:',x_range)
+        #print('returning x, x_range:',x_range)
         return x
     # broadcast along each element of the column to account for None values
     return np.where(np.isnan(x), np.nan, (x - x_min) / (x_range))
@@ -72,12 +72,6 @@ def process_data(input_filename = 'arrhythmia.data',
         data = np.apply_along_axis(collapse_label, 1, data)
         # print('after collapse:',data[:,-1])
 
-    if predict_missing:
-        # TODO: predict missing values with kNN
-        # print('before prediction:', data)
-        data = predict_missing_elements(data)
-        # print('after prediction:', data)
-
     # normalize the data
     if normalize:
         # this will affect the label if it hasn't been collapsed
@@ -88,6 +82,11 @@ def process_data(input_filename = 'arrhythmia.data',
         data = np.apply_along_axis(normalize_data, 0, data)
         data[:,-1] = label
         # print('after norm:', data)
+
+    if predict_missing:
+        #print('before prediction:', data)
+        data = predict_missing_elements(data)
+        #print('after prediction:', data)
 
     return data
 
