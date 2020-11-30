@@ -61,10 +61,11 @@ def predict_missing_elements(data, k=5):
 
     return data
 
-def process_data(input_filename = 'arrhythmia.data',
+def process_data(input_filename = 'arrhythmia.data', usecols=None,
         predict_missing=False, k_predict=5, collapse=True, normalize=False):
 
-    data = np.genfromtxt(input_filename, delimiter=',',missing_values='?', filling_values=None, dtype=float)
+    data = np.genfromtxt(input_filename, usecols=usecols,
+        delimiter=',',missing_values='?', filling_values=None, dtype=float)
 
     # should we have 16 classes (type of arrhythmia), or 1 (arrhythmia y/n)?
     if collapse:

@@ -88,9 +88,16 @@ if __name__=='__main__':
     import risk
 
     print('processing data...')
-    data = preprocess.process_data(collapse=True, normalize=True, predict_missing=True, k_predict=3)
+    usecols = [i for i in range(0,26)] + [i for i in range(87,98)] + [161, 163] + [i for i in range(219,228)] + [279]
+    print(len(usecols))
+    data = preprocess.process_data(usecols=usecols,
+        collapse=True, normalize=True, predict_missing=True, k_predict=3)
 
+    np.savetxt('arrhythmia_processed.data', data)
+
+    # data = data = np.genfromtxt('arrhythmia_processed.data')
     print(data)
+    print(data.shape)
 
     print('performing cross-validation...')
     models = [kNN(i) for i in range(1,10)]
