@@ -10,7 +10,7 @@ def zero_one(predict, true):
             return 0
         return 1
 
-    return np.mean(np.apply_along_axis(eq, 1, predict - true))
+    return np.apply_along_axis(eq, 1, predict - true)
 
 def empirical_risk(loss, predict, true):
     if loss=='mse':

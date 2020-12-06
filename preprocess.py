@@ -61,8 +61,22 @@ def predict_missing_elements(data, k=5):
 
     return data
 
+def encode_label(label_col):
+    # this will only work if all labels are integers, but that's fine by me
+    start = int(np.min(label_col))
+    label_range = np.max(label_col) - start + 1
+    labels = np.zeros((label_col.shape[0], int(label_range)))
+    print(labels.shape)
+    for i, l in enumerate(label_col):
+        labels[i, int(l) - start] = 1
+    return labels
+
 def process_data(input_filename = 'arrhythmia.data', usecols=None,
-        predict_missing=False, k_predict=5, collapse=True, normalize=False):
+        predict_missing=False, k_predict=5, collapse=True, normalize=False,
+        encode=True):
+
+    if collapse and encode:
+        print("doesn't make much sense to encode and collapse label (just binary case), but you're the boss!")
 
     data = np.genfromtxt(input_filename, usecols=usecols,
         delimiter=',',missing_values='?', filling_values=None, dtype=float)
@@ -89,10 +103,17 @@ def process_data(input_filename = 'arrhythmia.data', usecols=None,
         data = predict_missing_elements(data)
         #print('after prediction:', data)
 
-    return data
+    if encode:
+        labels = encode_label(data[:,-1])
+        data = data[:,0:-1]
+    else:
+        labels = data[:,-1]
+        data = data[:,0:-1]
 
-def partition_data(data, partitions=[0.2,0.2,0.6]):
-    data_partitions = [[] for _ in partitions]
+    return data, labels
+
+def partition_data(data, labels, partitions=[0.2,0.2,0.6]):
+    data_partitions = [None] * len(partitions)
 
     # right now: randomly split the data by first x rows, second y rows, etc
     m = np.shape(data)
@@ -105,7 +126,9 @@ def partition_data(data, partitions=[0.2,0.2,0.6]):
     n_part = [p * m[0] for p in partitions]
     start = 0
     for i, p in enumerate(n_part):
-        data_partitions[i] = data[math.floor(start):math.floor(start+p)]
+        data_partitions[i] = [None]*2
+        data_partitions[i][0] = data[math.floor(start):math.floor(start+p)]
+        data_partitions[i][1] = labels[math.floor(start):math.floor(start+p)]
         start += p
 
     return np.array(data_partitions, dtype=object)

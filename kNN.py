@@ -26,7 +26,7 @@ class kNN:
             self.method = self.regression
         else:
             print('ERROR: pick from regression or classification')
-
+        self.method_label = method
 
     def fit(self, features, labels):
         # for classification
@@ -34,6 +34,10 @@ class kNN:
         # w_i = 1/(d(x_q, x_i)^2)
         self.features = features
         self.labels = labels
+        if len(labels.shape) > 1:
+            self.num_out = labels.shape[1]
+        else:
+            self.num_out = 1
 
     def prediction(self, row):
         # find the k nearest data element
@@ -78,43 +82,48 @@ class kNN:
         return np.mean(classes)
 
     def predict(self, data):
-        p = np.zeros(data.shape[0])
-        # print(data.shape)
-        return np.apply_along_axis(self.prediction, 1, data)
+        pred = np.apply_along_axis(self.prediction, 1, data)
+
+        if self.method_label == 'classification':
+            if self.num_out > 1:
+                # need to encode the output
+                # this will only work for integer outputs
+                encode_pred = np.zeros((data.shape[0], self.num_out))
+                for i, p in enumerate(pred):
+                    encode_pred[i, int(p)] = 1
+                return encode_pred
+            else:
+                return pred
+        else: # regression
+            return pred
 
 if __name__=='__main__':
-    import kFold
     import preprocess
     import risk
+    from cross_validation import cross_validation
 
     print('processing data...')
     usecols = [i for i in range(0,26)] + [i for i in range(87,98)] + [161, 163] + [i for i in range(219,228)] + [279]
-    print(len(usecols))
-    data = preprocess.process_data(usecols=usecols,
-        collapse=True, normalize=True, predict_missing=True, k_predict=3)
-
-    np.savetxt('arrhythmia_processed.data', data)
-
-    # data = data = np.genfromtxt('arrhythmia_processed.data')
-    print(data)
-    print(data.shape)
+    X, y = preprocess.process_data(usecols=usecols,
+        collapse=True, normalize=True, encode=False,
+        predict_missing=True, k_predict=3)
 
     print('performing cross-validation...')
     models = [kNN(i) for i in range(1,10)]
-    r = kFold.cross_validation(data, models)
+    r = cross_validation(X, y, models)
 
     print(r)
     k = np.argmin(r) + 1
 
     print('evaluated best model (k:',k,')...')
-    partitioned_data = preprocess.partition_data(data, partitions=[0.2,0.8])
+    partitioned_data = preprocess.partition_data(X, y, partitions=[0.2,0.8])
 
     train = partitioned_data[1]
     valid = partitioned_data[0]
 
     model = kNN(k)
 
-    model.fit(train[:,0:-1], train[:,-1])
-    p = model.predict(valid[:,0:-1])
+    model.fit(train[0], train[1])
+    p = model.predict(valid[0])
 
-    print(risk.empirical_risk('mse', p, valid[:,-1]))
+    print(risk.empirical_risk('mse', p, valid[1]))
