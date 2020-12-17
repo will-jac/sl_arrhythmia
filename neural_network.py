@@ -64,9 +64,7 @@ class FFNN():
     # note: each layer internally will have a bias applied
     def __init__(self, hidden_layers,
             learning_rate = 0.05, num_iterations = 200,
-            batch_size = 32,
-            hidden_activation='sigmoid', output_activation='softmax',
-            alpha = 0.001):
+            batch_size = 32, alpha = 0.001):
 
         if type(hidden_layers) is int:
             hidden_layers = [hidden_layers]
@@ -305,19 +303,38 @@ def MLP_test():
 if __name__ == "__main__":
     # MLP_test()
 
+    # first, determine what the best network looks like
+
     net_hidden_layers = [
         (100),
         (1000),
+
         (100, 100),
         (1000, 1000),
         (100, 1000),
         (1000, 100),
+
         (100, 100, 100),
         (100, 1000, 100),
         (1000, 1000, 100),
+
+        (100, 100, 100, 100),
+        (100, 1000, 100, 100),
         (100, 1000, 1000, 100),
+        (1000, 100, 100, 100),
         (1000, 1000, 100, 100),
+        (1000, 10000, 1000, 100),
+        (1000, 10000, 1000, 1000),
+
+        (100, 100, 100, 100, 100),
+        (100, 1000, 1000, 100, 100),
         (1000, 1000, 100, 100, 100),
+        (1000, 1000, 1000, 100, 100),
+        (1000, 10000, 1000, 100, 10),
+        (10000, 1000, 1000, 100, 10),
+        (10000, 10000, 1000, 100, 100),
+        (1000, 10000, 10000, 1000, 100),
+        (1000, 10000, 1000, 100, 50),
     ]
     models = [FFNN(h) for h in net_hidden_layers]
 
