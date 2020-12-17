@@ -123,7 +123,10 @@ if __name__=='__main__':
 
     model = kNN(k)
 
+    print(train[0].shape, train[1].shape)
     model.fit(train[0], train[1])
     p = model.predict(valid[0])
 
-    print(risk.empirical_risk('mse', p, valid[1]))
+    from evaluate import evaluate
+    print(valid[1].shape, p.shape)
+    evaluate(valid[1], p)

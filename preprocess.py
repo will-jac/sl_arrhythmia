@@ -66,7 +66,7 @@ def encode_label(label_col):
     start = int(np.min(label_col))
     label_range = np.max(label_col) - start + 1
     labels = np.zeros((label_col.shape[0], int(label_range)))
-    print(labels.shape)
+    # print(labels.shape)
     for i, l in enumerate(label_col):
         labels[i, int(l) - start] = 1
     return labels
