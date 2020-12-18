@@ -27,10 +27,14 @@ def cross_validation(X, y, models):
                 train_X = np.append(train_X, partitioned_data[j][0], axis=0)
                 train_y = np.append(train_y, partitioned_data[j][1], axis=0)
 
-        model.fit(train_X, train_y)
+        try:
+            model.fit(train_X, train_y)
+        
+            p = model.predict(valid[0])
 
-        p = model.predict(valid[0])
-
-        r.append(risk.empirical_risk('mse', p, valid[1]))
+            r.append(risk.empirical_risk('mse', p, valid[1]))
+        except Exception as e:
+            print(e)
+            r.append(100000) # big number because it didn't work
 
     return r

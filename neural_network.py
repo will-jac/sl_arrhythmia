@@ -300,41 +300,24 @@ def MLP_test():
     from sklearn.metrics import accuracy_score
     print('accuracy', accuracy_score(validate[1], model.predict(validate[0])))
 
-if __name__ == "__main__":
     # MLP_test()
 
     # first, determine what the best network looks like
-
+def cross_validate():
     net_hidden_layers = [
         (100),
         (1000),
-
+        
         (100, 100),
         (1000, 1000),
-        (100, 1000),
         (1000, 100),
 
-        (100, 100, 100),
-        (100, 1000, 100),
+        (1000, 100, 100),
         (1000, 1000, 100),
 
-        (100, 100, 100, 100),
-        (100, 1000, 100, 100),
-        (100, 1000, 1000, 100),
-        (1000, 100, 100, 100),
         (1000, 1000, 100, 100),
-        (1000, 10000, 1000, 100),
-        (1000, 10000, 1000, 1000),
-
-        (100, 100, 100, 100, 100),
-        (100, 1000, 1000, 100, 100),
-        (1000, 1000, 100, 100, 100),
-        (1000, 1000, 1000, 100, 100),
-        (1000, 10000, 1000, 100, 10),
-        (10000, 1000, 1000, 100, 10),
-        (10000, 10000, 1000, 100, 100),
-        (1000, 10000, 10000, 1000, 100),
-        (1000, 10000, 1000, 100, 50),
+        (1000, 2000, 100, 500, 100),
+        (2000, 1000, 500, 100, 50),
     ]
     models = [FFNN(h) for h in net_hidden_layers]
 
@@ -363,3 +346,28 @@ if __name__ == "__main__":
     from evaluate import evaluate
     print(valid[1].shape, p.shape)
     evaluate(valid[1], p)
+
+if __name__ == '__main__':
+    
+    from preprocess import process_data, partition_data
+    print('processing data...')
+    X, y = process_data(collapse=False, encode=True,
+        normalize=True, predict_missing=True, k_predict=3)
+
+    partitioned_data = partition_data(X, y, partitions=[0.2,0.8])
+
+    train = partitioned_data[1]
+    valid = partitioned_data[0]
+    
+    #model = FFNN((1000, 100, 100), num_iterations=500)
+    model = FFNN((1000, 10000, 1000, 100, 50), num_iterations = 500)
+
+    model.fit(train[0], train[1])
+
+    from evaluate import evaluate
+    evaluate(train[1], model.predict(train[0]))
+    evaluate(valid[1], model.predict(valid[0]))
+
+    from sklearn.metrics import roc_curve
+
+    print(roc_curve(valid[1], model.predict(valid[0])))

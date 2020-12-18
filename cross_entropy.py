@@ -14,7 +14,7 @@ def cross_entropy(y, p, y_is_binary=False, eps=1e-15):
         # from this, we can do y * log(p) to get
         # (true * log(predict) + (1 - true) * (1 - log(predict)))
         y = np.append(1 - y, y, axis=1)
-
+        
 
     p = np.array(p)
     # prevent log (0) errors

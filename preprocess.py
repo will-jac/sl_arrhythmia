@@ -5,7 +5,7 @@ import math
 # reshape the last column to be 0 (no arrhythmia) or 1 (arrhythmia)
 def collapse_label(x):
     # x = row vector
-    if not math.isclose(x[-1], 1):
+    if math.isclose(x[-1], 1):
         x[-1] = 0
     else:
         x[-1] = 1
@@ -131,7 +131,7 @@ def partition_data(data, labels, partitions=[0.2,0.2,0.6]):
         data_partitions[i][1] = labels[math.floor(start):math.floor(start+p)]
         start += p
 
-    return np.array(data_partitions, dtype=object)
+    return data_partitions
 
 
 if __name__=='__main__':

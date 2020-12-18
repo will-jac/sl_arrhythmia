@@ -13,16 +13,32 @@ def evaluate(true, predict_prob):
     else:
         is_binary = False
 
-    print('mse:', mse(true, predict_prob).mean())
-
-    # print(valid_prob.shape, validate[1].shape)
-    print('cross entropy:', cross_entropy(true, predict_prob, is_binary))
-
-    # one-hot encode valudate and probabilities
-    correct = np.argmax(true, axis=1)
-    predict = np.argmax(predict_prob, axis=1)
+    try:
+        print('mse:', mse(true, predict_prob).mean())
+    except:
+        print('mse failed')
+    try:
+        # print(valid_prob.shape, validate[1].shape)
+        print('cross entropy:', cross_entropy(true, predict_prob)) #, is_binary))
+    except:
+        print('cross entropy failed')
+    
+    if is_binary:
+        # y is alread encoded
+        correct = true
+        predict = predict_prob
+    else:
+        # one-hot encode valudate and probabilities
+        correct = np.argmax(true, axis=1)
+        predict = np.argmax(predict_prob, axis=1)
     print(correct.shape, predict.shape)
 
-    print('accuracy:', accuracy_score(correct, predict))
-
-    print('confusion matrix:', confusion_matrix(correct, predict))
+    try:
+        print('accuracy:', accuracy_score(correct, predict))
+    except:
+        print('accuracy failed')
+    try:
+        print('confusion matrix:')
+        print(confusion_matrix(correct, predict))
+    except:
+        print('confusion matrix failed')
